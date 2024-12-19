@@ -61,7 +61,15 @@ def get_ds(model_name):
 
     return new_ds
 
-get_prob = lambda logprob_dict, tok_id: np.exp(logprob_dict[tok_id].logprob) if tok_id in logprob_dict.keys() else 0
+def get_prob(outputs, tok_id):
+    if bool(len(outputs) < 1) or bool(len(outputs[0].logprobs) < 1):
+        return 0
+    
+    logprob_dict = outputs[0].logprobs[0]
+    if tok_id in logprob_dict.keys():
+        return np.exp(logprob_dict[tok_id].logprob) 
+    else:
+        return 0
 
 def generate_responses(inputs):
     text_list, model_name, gpu_id, reverse_context_query = inputs
@@ -84,7 +92,7 @@ def generate_responses(inputs):
 
     tok = llm.llm_engine.tokenizer.tokenizer
     idx_tokens = [tok.encode(str(i))[0] for i in range(1, 6)] # Get token IDs for the tokens "1", "2", "3", "4", and "5"
-    probs = np.array([[get_prob(r.outputs[0].logprobs[0], y) for y in idx_tokens] for r in responses])
+    probs = np.array([[get_prob(r.outputs, y) for y in idx_tokens] for r in responses])
     return probs.tolist()
 
 def get_scores(all_texts, reverse_context_query):
