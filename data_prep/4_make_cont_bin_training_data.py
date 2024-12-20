@@ -2,19 +2,18 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 import numpy as np
 
-score_system_message = "Given a piece of text and a query, output a score of 1-7 based on how related the query is to the text. 1 means least related and 7 is most related."
-binary_system_message = "If the query is answerable based on the given context output True, else output False."
+score_system_message = "Given a query and a piece of text, output a score of 1-7 based on how related the query is to the text. 1 means least related and 7 is most related."
 
 def filter_for_correct_scores_only(x):
     return bool(
         bool(
-            x["label"] and bool(x["mean_exp_val_max7"] >= 3.5)
+            x["label"] and bool(x["mean_exp_val_max7"] >= 4)
         ) or bool(
-            bool(not x["label"]) and bool(x["mean_exp_val_max7"] < 3.5)
+            bool(not x["label"]) and bool(x["mean_exp_val_max7"] <= 4)
         )
     )
 
-format_text_query = lambda t, q: f"{t}\n\n<<<Query>>>\n{q}"
+format_text_query = lambda t, q: f"<<<Query>>>\n{q}\n\n<<<Context>>>\n{t}"
 
 def make_continuous_data(x):
     return {
