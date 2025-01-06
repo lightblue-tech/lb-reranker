@@ -95,6 +95,7 @@ def generate_responses(inputs):
     return probs.tolist()
 
 def get_scores(all_texts, reverse_context_query):
+    # Modify this to suit your number of GPUs
     num_gpus = 8
     batch_size = int(math.ceil(len(all_texts) / num_gpus))
 
