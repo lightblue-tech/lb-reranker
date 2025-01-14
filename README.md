@@ -7,7 +7,8 @@ The LB Reranker has been trained to determine the relatedness of a given query t
 
 This model is fine-tuned from a [Qwen/Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) model checkpoint and was trained for roughly 5.5 hours using the 8 x L20 instance ([ecs.gn8is-8x.32xlarge](https://www.alibabacloud.com/help/en/ecs/user-guide/gpu-accelerated-compute-optimized-and-vgpu-accelerated-instance-families-1)) on [Alibaba Cloud](https://www.alibabacloud.com/).
 
-The training data for this model can be found at [lightblue/reranker_continuous_filt_max7_train](https://huggingface.co/datasets/lightblue/reranker_continuous_filt_max7_train) and the code for generating this data as well as running the training of the model can be found on [our Github repo](https://github.com/lightblue-tech/lb-reranker).
+The training data for this model can be found at [lightblue/reranker_continuous_filt_max7_train](https://huggingface.co/datasets/lightblue/reranker_continuous_filt_max7_train).
+The code for generating this data is listed in our Github repo [here](https://github.com/lightblue-tech/lb-reranker/tree/main/data_prep) and the code for training of the model can be found [here](https://github.com/lightblue-tech/lb-reranker/tree/main/training). Note that the training is conducted using [Llama Factory](https://github.com/hiyouga/LLaMA-Factory), which is installed at `/root/LLaMA-Factory`. You may need to change some of the training code to match your Llama Factory set-up to replicate our training.
 
 Trained on data in over 95 languages, this model is applicable to a broad range of use cases.
 
