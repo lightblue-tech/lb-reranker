@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 import numpy as np
 
 score_system_message = "Given a query and a piece of text, output a score of 1-7 based on how related the query is to the text. 1 means least related and 7 is most related."
+rev_score_system_message = "Given a piece of text and a query, output a score of 1-7 based on how related the query is to the text. 1 means least related and 7 is most related."
 
 def filter_for_correct_scores_only(x):
     return bool(
@@ -14,12 +15,21 @@ def filter_for_correct_scores_only(x):
     )
 
 format_text_query = lambda t, q: f"<<<Query>>>\n{q}\n\n<<<Context>>>\n{t}"
+format_query_text = lambda t, q: f"<<<Context>>>\n{t}\n\n<<<Query>>>\n{q}"
 
 def make_continuous_data(x):
     return {
         "conversations": [
             { "from": "system", "value": score_system_message },
             { "from": "human", "value":format_text_query(x["context"], x["question"])},
+            { "from": "gpt", "value": str(int(x["mean_exp_val_max7_round"])) } ]
+    }
+
+def make_rev_continuous_data(x):
+    return {
+        "rev_conversations": [
+            { "from": "system", "value": rev_score_system_message },
+            { "from": "human", "value":format_query_text(x["context"], x["question"])},
             { "from": "gpt", "value": str(int(x["mean_exp_val_max7_round"])) } ]
     }
 
@@ -56,6 +66,7 @@ def main():
     )
 
     ds = ds.map(make_continuous_data, num_proc=32)
+    ds = ds.map(make_rev_continuous_data, num_proc=32)
 
     tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-0.5B-Instruct")
 
@@ -70,7 +81,7 @@ def main():
     ds = ds.shuffle()
 
     ds.filter(filter_for_correct_scores_only, num_proc=32).push_to_hub(
-        "lightblue/reranker_continuous_filt_max7_train", private=True
+        "lightblue/reranker_continuous_filt_max7_train_extra", private=True
     )
 
 if __name__ == '__main__':
