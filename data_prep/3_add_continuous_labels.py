@@ -33,7 +33,6 @@ def get_ds(model_name):
     ds = ds.add_column("row_id", list(range(len(ds))))
     ds = ds.shuffle()
 
-    ### ADDED TO 32B ONLY
     print("Deduplicating")
     ds = remove_duplicates(ds)
 
@@ -96,6 +95,7 @@ def generate_responses(inputs):
     return probs.tolist()
 
 def get_scores(all_texts, reverse_context_query):
+    # Modify this to suit your number of GPUs
     num_gpus = 8
     batch_size = int(math.ceil(len(all_texts) / num_gpus))
 
@@ -116,8 +116,6 @@ def get_scores(all_texts, reverse_context_query):
         scores.extend(score_split)
 
     return scores
-
-flatten = lambda xss: [x for xs in xss for x in xs]
 
 if __name__ == '__main__':
     model_name = "Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4"
